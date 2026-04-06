@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Flashcards</title>
+	<style>
+		body { font-family: -apple-system, Arial, sans-serif; margin: 20px; max-width: 900px; }
+		nav { display: flex; gap: 10px; margin-bottom: 16px; }
+		button { padding: 8px 12px; cursor: pointer; }
+		input, textarea { width: 100%; padding: 8px; margin: 6px 0 12px; }
+		.card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin: 10px 0; }
+		.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+		.muted { color: #666; font-size: 14px; }
+	</style>
+</head>
+<body>
+	<h2>Flashcard Learning App</h2>
+
+	<nav>
+		<button id="nav-manage">Manage Cards</button>
+		<button id="nav-study">Study</button>
+	</nav>
+
+	<div id="app"></div>
+
+	<script src="js/api.js"></script>
+	<script src="js/app.js"></script>
+</body>
+</html>
