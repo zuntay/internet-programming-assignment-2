@@ -1,140 +1,98 @@
-## Tech stack
+# Flashcard Learning App
 
-- Frontend: HTML, CSS, JavaScript (single-page app)
-- Backend: Python + Flask
+A full-stack flashcard learning web application built for Internet Programming Assignment 2.
+
+The application allows users to register, log in, create and manage flashcards, study cards, and record learning history. Admin users can view all users' learning history.
+
+---
+
+## Tech Stack
+
+- Frontend: React + Vite
+- Routing: React Router
+- Backend: Python + FastAPI
 - Database: MySQL
+- Authentication: JWT + bcrypt password hashing
+- API style: RESTful API
 
 ---
 
-# How to run locally (marker instructions)
+## Main Features
 
-## A) Prerequisites
+### User Authentication
 
-1. Python 3 installed
-2. MySQL installed and running
+- Register a new account
+- Log in with username and password
+- Passwords are stored as hashed values
+- JWT token is used for protected routes
+- Authenticated users can access dashboard, flashcards, and study pages
 
----
+### Flashcard CRUD
 
-## B) Database setup (MySQL)
+Users can:
 
-### B1) Create/import the database
+- Create flashcards
+- View their own flashcards
+- Search flashcards in real time
+- Edit flashcards
+- Delete flashcards
 
-This repo includes a database export file:
+### Study Mode
 
-- `database/export/flashcards.sql`
+Users can:
 
-Import it into MySQL (recommended method: terminal):
+- Load their flashcards into a study queue
+- Type an answer
+- Reveal and check the correct answer
+- Save each study attempt into learning history
+- View their recent personal learning history
 
-1. Open a terminal in the project root folder.
-2. Run:
-    - `/usr/local/mysql/bin/mysql -u root -p < database/export/flashcards.sql`
-3. Enter the MySQL password when prompted.
+### Admin Learning History
 
-If you prefer importing inside MySQL:
+Admin users can:
 
-1. Open MySQL:
-    - `/usr/local/mysql/bin/mysql -u root -p`
-2. Run:
-    - `SOURCE /full/path/to/this/repo/database/export/flashcards.sql;`
-
-### B2) Confirm the database exists
-
-Inside MySQL:
-
-- `SHOW DATABASES;`
-- `USE flashcards;`
-- `SHOW TABLES;` (should include `cards`)
-
----
-
-## C) Backend setup (Flask API)
-
-### C1) Create `.env` (do not commit)
-
-Create a file named `.env` in the project root (same level as `client/`, `server/`, `database/`).
-
-Example `.env`:
-
-- `DB_HOST=localhost`
-- `DB_PORT=3306`
-- `DB_USER=root`
-- `DB_PASSWORD=YOUR_PASSWORD_HERE`
-- `DB_NAME=flashcards`
-- `PORT=3000`
-
-### C2) Install Python dependencies
-
-In the project root:
-
-1. Create and activate a virtual environment (recommended):
-    - `python3 -m venv .venv`
-    - `source .venv/bin/activate`
-2. Install dependencies:
-    - `pip install -r server/requirements.txt`
-
-### C3) Run the backend
-
-In the project root (venv activated):
-
-- `python3 -m server.app`
-
-Expected: server runs at
-
-- `http://127.0.0.1:3000`
-
-Quick API checks:
-
-- `http://127.0.0.1:3000/api/health`
-- `http://127.0.0.1:3000/api/cards`
+- View all users' learning history
+- Search history records
+- Filter attempts by correct or incorrect result
+- See total attempts, correct attempts, incorrect attempts, and accuracy
 
 ---
 
-## D) Frontend setup (SPA)
+## Database Entities
 
-### D1) Run a static server
+The project uses three main database entities:
 
-Open a second terminal in the project root:
+1. `users`
+2. `flashcards`
+3. `view_history`
 
-- `python3 -m http.server 8000`
+Relationship summary:
 
-### D2) Open the app in a browser
-
-Open:
-
-- `http://127.0.0.1:8000/client/`
-
----
-
-# App features
-
-## Manage Cards (CRUD)
-
-- Create a card (question, answer, optional tags)
-- List cards
-- Edit a card
-- Delete a card
-
-## Study mode
-
-- Load cards into a study queue
-- See all questions in a scrollable list and click to jump to a specific card
-- Type an answer, then click “Reveal + check my answer”
-- After revealing, clicking “Next card” removes that card from the study queue (disappears after use)
+- A user can own many flashcards.
+- A user can have many learning history records.
+- A flashcard can appear in many learning history records.
 
 ---
 
-# API endpoints
+## Local Setup Instructions
 
-- `GET /api/health`
-- `GET /api/cards`
-- `GET /api/cards/<id>`
-- `POST /api/cards`
-- `PUT /api/cards/<id>`
-- `DELETE /api/cards/<id>`
+### A) Prerequisites
+
+Make sure you have installed:
+
+- Python 3
+- Node.js and npm
+- MySQL Server
+
+Also make sure MySQL Server is running before starting the backend.
 
 ---
 
-# Notes
+## B) Database Setup
 
-- `.env` is required locally but must not be committed.
-- If ports 3000 or 8000 are in use, free the port or change the PORT values consistently.
+This project uses MySQL.
+
+From the project root, run:
+
+```bash
+/usr/local/mysql/bin/mysql -u root -p < database/mysql_schema.sql

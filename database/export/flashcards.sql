@@ -14,34 +14,110 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+SET @@SESSION.SQL_LOG_BIN= 0;
 
 --
--- Table structure for table `cards`
+-- GTID state at the beginning of the backup 
 --
 
-DROP TABLE IF EXISTS `cards`;
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'd317cc30-30e5-11f1-bbe3-1e6290abab55:1-49';
+
+--
+-- Table structure for table `flashcards`
+--
+
+DROP TABLE IF EXISTS `flashcards`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cards` (
+CREATE TABLE `flashcards` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
   `question` varchar(255) NOT NULL,
   `answer` text NOT NULL,
-  `tags` varchar(255) DEFAULT NULL,
+  `category` varchar(100) DEFAULT NULL,
+  `difficulty` enum('easy','medium','hard') NOT NULL DEFAULT 'medium',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`),
+  KEY `fk_flashcards_user` (`user_id`),
+  CONSTRAINT `fk_flashcards_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `cards`
+-- Dumping data for table `flashcards`
 --
 
-LOCK TABLES `cards` WRITE;
-/*!40000 ALTER TABLE `cards` DISABLE KEYS */;
-INSERT INTO `cards` VALUES (2,'hhh','ggg',NULL,'2026-04-06 05:58:22','2026-04-06 05:58:22'),(3,'jj','jj',NULL,'2026-04-06 06:01:25','2026-04-06 06:01:25'),(5,'dd','ee',NULL,'2026-04-06 06:06:50','2026-04-06 06:06:50'),(6,'qq','qq',NULL,'2026-04-06 06:07:29','2026-04-06 06:07:29'),(7,'qq','qq',NULL,'2026-04-06 06:07:31','2026-04-06 06:07:31'),(8,'qq','qq',NULL,'2026-04-06 06:07:44','2026-04-06 06:07:44'),(9,'ee','ee',NULL,'2026-04-06 06:07:56','2026-04-06 06:07:56'),(10,'eee','eee',NULL,'2026-04-06 06:07:59','2026-04-06 06:07:59'),(11,'ee','ee',NULL,'2026-04-06 06:10:27','2026-04-06 06:10:27'),(12,'ee','ee',NULL,'2026-04-06 06:10:29','2026-04-06 06:10:29'),(13,'uu','u',NULL,'2026-04-06 06:26:25','2026-04-06 06:26:25');
-/*!40000 ALTER TABLE `cards` ENABLE KEYS */;
+LOCK TABLES `flashcards` WRITE;
+/*!40000 ALTER TABLE `flashcards` DISABLE KEYS */;
+INSERT INTO `flashcards` VALUES (2,2,'What is JWT used for?','Authentication and authorization','Security','medium','2026-05-18 10:57:29','2026-05-18 10:57:29');
+/*!40000 ALTER TABLE `flashcards` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(80) NOT NULL,
+  `email` varchar(120) NOT NULL,
+  `hashed_password` varchar(255) NOT NULL,
+  `role` enum('user','admin') NOT NULL DEFAULT 'user',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'testuser','testuser@example.com','$2b$12$smSO0h0n2RrfBJaCcu2ireVe.ziYH34euSdoacyY7skg6umb5pJ/G','user','2026-05-18 10:24:10','2026-05-18 10:24:10'),(2,'testuser2','testuser2@example.com','$2b$12$B80N3ZuMeJgDXqsa4iUiteHksLHg9lEwvw2Pe9WibuBo2vsHOzsQC','admin','2026-05-18 10:31:07','2026-05-18 11:02:09');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `view_history`
+--
+
+DROP TABLE IF EXISTS `view_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `view_history` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `flashcard_id` int NOT NULL,
+  `user_answer` text,
+  `is_correct` tinyint(1) NOT NULL DEFAULT '0',
+  `viewed_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_history_user` (`user_id`),
+  KEY `fk_history_flashcard` (`flashcard_id`),
+  CONSTRAINT `fk_history_flashcard` FOREIGN KEY (`flashcard_id`) REFERENCES `flashcards` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_history_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `view_history`
+--
+
+LOCK TABLES `view_history` WRITE;
+/*!40000 ALTER TABLE `view_history` DISABLE KEYS */;
+INSERT INTO `view_history` VALUES (1,2,2,'Authentication and authorization',1,'2026-05-18 10:58:11'),(2,2,2,'Authentication and authorization\nWhen this works, tell me:',0,'2026-05-20 06:18:53'),(3,2,2,'Authentication and authorization',1,'2026-05-20 06:19:30');
+/*!40000 ALTER TABLE `view_history` ENABLE KEYS */;
+UNLOCK TABLES;
+SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -52,4 +128,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-06 20:48:36
+-- Dump completed on 2026-05-20 20:05:17
